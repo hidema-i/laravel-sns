@@ -1,6 +1,6 @@
 @extends('app')
 
-@section('title','パスワード再設定')
+@section('title', 'パスワード再設定')
 
 @section('content')
 <div class="container">
@@ -13,14 +13,14 @@
 
                     @include('error_card_list')
 
-                    @if(session('status'))
+                    @if (session('status'))
                     <div class="card-text alert alert-success">
-                        {{session('status')}}
+                        {{ session('status') }}
                     </div>
                     @endif
 
                     <div class="card-text">
-                        <form method="POST" action="{{ route('password.email')}}">
+                        <form method="POST" action="{{ route('password.email') }}">
                             @csrf
 
                             <div class="md-form">
@@ -29,7 +29,9 @@
                             </div>
 
                             <button class="btn btn-block blue-gradient mt-2 mb-2" type="submit">メール送信</button>
+
                         </form>
+
                     </div>
                 </div>
             </div>
