@@ -43,4 +43,9 @@ class Article extends Model
     }
     //ここまで追加
     
+    //tags
+    public function tags():BelongsToMany
+    {
+        return $this->belongsToMany('App\Tag')->withTimestamps();
+    }
 }

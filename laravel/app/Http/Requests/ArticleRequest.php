@@ -27,6 +27,8 @@ class ArticleRequest extends FormRequest
             //ここに投稿formのルールを記載
             'title' => 'required|max:50',
             'body' => 'required|max:500',
+            //tags
+            'tags' => 'json|regex:/^(?!.*\s).+$/u|regex:/^(?!.*\/).*$/u',
         ];
     }
     public function attributes()
@@ -34,6 +36,16 @@ class ArticleRequest extends FormRequest
         return [
             'title' => 'タイトル',
             'body' => '本文',
+            'tags' => 'タグ',
         ];
+    }
+    //decodeしタグの中textを取り出す
+    public function passedValidation()
+    {   //slice5タグまで表示し、mapで最初から検索し$requestTag->textを取り出す
+        $this->tags = collect(json_decode($this->tags))
+            ->slice(0, 5)
+            ->map(function ($requestTag) {
+                return $requestTag->text;
+            });
     }
 }
