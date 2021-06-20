@@ -1,17 +1,14 @@
 <template>
   <div>
-      <!-- 追記 -->
-      <input
-      type="hidden"
-      name="tags"
-      :value="tagsJson"
-      >
-      <!-- ここまで追記 -->
+    <!-- 追記 -->
+    <input type="hidden" name="tags" :value="tagsJson" />
+    <!-- ここまで追記 -->
     <vue-tags-input
       v-model="tag"
       :tags="tags"
       placeholder="タグを5個まで入力できます"
       :autocomplete-items="filteredItems"
+      :add-on-key="[13, 32]"
       @tags-changed="(newTags) => (tags = newTags)"
     />
   </div>
@@ -24,27 +21,22 @@ export default {
   components: {
     VueTagsInput,
   },
+  //----------ここから追加----------
+  props: {
+    initialTags: {
+      type: Array,
+      default: [],
+    },
+    autocompleteItems: {
+      type: Array,
+      default: [],
+    },
+  },
+  //----------ここまで追加----------
   data() {
     return {
       tag: "",
-      tags: [],
-      autocompleteItems: [
-        {
-          text: "Spain",
-        },
-        {
-          text: "France",
-        },
-        {
-          text: "USA",
-        },
-        {
-          text: "Germany",
-        },
-        {
-          text: "China",
-        },
-      ],
+      tags: this.initialTags,
     };
   },
   computed: {
@@ -53,9 +45,9 @@ export default {
         return i.text.toLowerCase().indexOf(this.tag.toLowerCase()) !== -1;
       });
     },
-    tagsJson(){
-        return JSON.stringify(this.tags)
-    }
+    tagsJson() {
+      return JSON.stringify(this.tags);
+    },
   },
 };
 </script>
@@ -72,5 +64,9 @@ export default {
   margin-right: 4px;
   border-radius: 0px;
   font-size: 13px;
+}
+/* タグ入力フォームでタグをハッシュタグ風に表示する */
+.vue-tags-input .ti-tag::before {
+  content: "#";
 }
 </style>

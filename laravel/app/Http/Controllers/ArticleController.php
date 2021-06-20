@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Article;
+use App\Tag;
 use App\Http\Requests\ArticleRequest;
 
 class ArticleController extends Controller
@@ -24,7 +25,16 @@ class ArticleController extends Controller
     //登録画面表示
     public function create()
     {
-        return view('articles.create');
+        //追記(Tagの保管機能)
+        $allTagNames = Tag::all()->map(function ($tag) {
+            return ['text' => $tag->name];
+        });
+
+        return view('articles.create', [
+            'allTagNames' => $allTagNames,
+        ]);
+
+        // return view('articles.create');
     }
 
     //登録処理
@@ -33,18 +43,49 @@ class ArticleController extends Controller
         $article->fill($request->all());
         $article->user_id = $request->user()->id;
         $article->save();
+
+        //Tags追記
+        $request->tags->each(function ($tagName) use ($article) {
+            $tag = Tag::firstOrCreate(['name' => $tagName]);
+            $article->tags()->attach($tag);
+        });
+        //ここまでTags追記
+
         return redirect()->route('articles.index');
     }
 
     //更新画面 
     public function edit(Article $article)
     {
-        return view('articles.edit', ['article' => $article]);
+        //tag削除
+        $tagNames = $article->tags->map(function ($tag) {
+            return ['text' => $tag->name];
+        });
+
+        //追記
+        $allTagNames = Tag::all()->map(function ($tag) {
+            return ['text' => $tag->name];
+        });
+
+        return view('articles.edit', [
+            'article' => $article,
+            'tagNames' => $tagNames,
+            //追記
+            'allTagNames' => $allTagNames,
+        ]);
+        // return view('articles.edit', ['article' => $article]);
     }
     //更新処理
     public function update(ArticleRequest $request, Article $article)
     {
         $article->fill($request->all())->save();
+        //----------ここから追加----------
+        $article->tags()->detach();
+        $request->tags->each(function ($tagName) use ($article) {
+            $tag = Tag::firstOrCreate(['name' => $tagName]);
+            $article->tags()->attach($tag);
+        });
+        //----------ここまで追加----------
 
         return redirect()->route('articles.index');
     }
