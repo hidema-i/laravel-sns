@@ -18,7 +18,8 @@ class ArticleController extends Controller
     //一覧表示
     public function index()
     {
-        $articles = Article::all()->sortByDesc('created_at');
+        //Eagerロードを追加する
+        $articles = Article::all()->sortByDesc('created_at')->load(['user', 'likes', 'tags']); 
         return view('articles.index', ['articles' => $articles]);
     }
 
